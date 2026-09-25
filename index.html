@@ -7,20 +7,87 @@
     <title>Лава Яша</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+        }
+
+        .game {
+            width: 100%;
+            max-width: 500px;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+
+        .play-button {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+
+            background: #ff5722;
+            color: white;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .play-button:active {
+            transform: scale(0.97);
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Лава Яша 🔥</h1>
+<div class="game">
 
-    <p>Mini App работает!</p>
+    <h1>🔥 Лава Яша</h1>
 
-    <script>
-        const tg = window.Telegram.WebApp;
+    <p class="subtitle">Добро пожаловать в игру</p>
 
-        tg.ready();
-        tg.expand();
-    </script>
+    <button class="play-button" onclick="startGame()">
+        🎮 Играть
+    </button>
+
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+
+    tg.ready();
+    tg.expand();
+
+    function startGame() {
+        alert("Игра начинается! 🔥");
+    }
+</script>
 
 </body>
 </html>
