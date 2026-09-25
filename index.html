@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -10,6 +11,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
@@ -96,7 +98,7 @@
         }
 
         .card.disabled {
-            opacity: .45;
+            opacity: .4;
             cursor: default;
         }
 
@@ -104,11 +106,6 @@
             background: #27272d;
             color: #777;
             cursor: default;
-        }
-
-        .card.selected {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 18px rgba(255,255,255,.18);
         }
 
         .table-area {
@@ -187,9 +184,9 @@
             background: #249b59;
         }
 
-        button:disabled {
-            opacity: .35;
-            cursor: default;
+        button.big {
+            font-size: 19px;
+            padding: 16px 30px;
         }
 
         .status {
@@ -205,6 +202,47 @@
             font-size: 13px;
             margin-top: 3px;
         }
+
+        /* START SCREEN */
+
+        .start-screen {
+            position: fixed;
+            inset: 0;
+            background: #101014;
+            z-index: 200;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .start-box {
+            width: min(350px, 100%);
+        }
+
+        .start-logo {
+            font-size: 70px;
+            margin-bottom: 10px;
+        }
+
+        .start-title {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .start-subtitle {
+            color: #aaa;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* GAME OVER */
 
         .overlay {
             position: fixed;
@@ -240,6 +278,7 @@
         }
 
         @media (max-height: 700px) {
+
             .card {
                 width: 50px;
                 height: 72px;
@@ -253,70 +292,173 @@
                 min-height: 125px;
             }
         }
+
     </style>
 </head>
 
 <body>
 
+
+<!-- ========================================= -->
+<!-- ЭКРАН НАЧАЛА -->
+<!-- ========================================= -->
+
+<div class="start-screen" id="startScreen">
+
+    <div class="start-box">
+
+        <div class="start-logo">🔥</div>
+
+        <div class="start-title">
+            Лава Яша
+        </div>
+
+        <div class="start-subtitle">
+            Дурак • 36 карт
+        </div>
+
+        <button
+            class="primary big"
+            onclick="startGame()"
+        >
+            🎮 Начать игру
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================= -->
+<!-- ИГРА -->
+<!-- ========================================= -->
+
 <div id="game">
 
     <div class="top">
-        <div class="title">🔥 Лава Яша</div>
-        <div class="info" id="roundInfo">Подготовка...</div>
+
+        <div class="title">
+            🔥 Лава Яша
+        </div>
+
+        <div class="info" id="roundInfo">
+            Подготовка...
+        </div>
+
     </div>
+
 
     <div class="table">
 
+
         <!-- ЛАВА ЯША -->
+
         <div class="player-area">
-            <div class="name">🔥 Лава Яша</div>
-            <div class="cards" id="enemyCards"></div>
+
+            <div class="name">
+                🔥 Лава Яша
+            </div>
+
+            <div
+                class="cards"
+                id="enemyCards"
+            ></div>
+
         </div>
 
+
         <!-- СТОЛ -->
+
         <div class="table-area">
 
-            <div class="trump" id="trumpInfo">
+            <div
+                class="trump"
+                id="trumpInfo"
+            >
                 Козырь: —
             </div>
 
-            <div class="table-cards" id="tableCards"></div>
+            <div
+                class="table-cards"
+                id="tableCards"
+            ></div>
 
-            <div class="deck-info" id="deckInfo">
-                Колода: 24
+            <div
+                class="deck-info"
+                id="deckInfo"
+            >
+                Колода: —
             </div>
+
         </div>
+
 
         <!-- ИГРОК -->
+
         <div class="player-area">
 
-            <div class="status" id="status">
-                Подготовка...
+            <div
+                class="status"
+                id="status"
+            >
+                Нажми «Начать игру»
             </div>
 
-            <div class="controls" id="controls"></div>
 
-            <div class="name">👤 Ты</div>
+            <div
+                class="controls"
+                id="controls"
+            ></div>
 
-            <div class="cards" id="playerCards"></div>
+
+            <div class="name">
+                👤 Ты
+            </div>
+
+
+            <div
+                class="cards"
+                id="playerCards"
+            ></div>
 
         </div>
 
     </div>
+
 </div>
 
-<div class="overlay" id="gameOver">
+
+<!-- ========================================= -->
+<!-- КОНЕЦ ИГРЫ -->
+<!-- ========================================= -->
+
+<div
+    class="overlay"
+    id="gameOver"
+>
+
     <div class="result">
-        <h2 id="resultTitle">Игра окончена</h2>
+
+        <h2 id="resultTitle">
+            Игра окончена
+        </h2>
+
         <p id="resultText"></p>
 
-        <button class="primary" onclick="location.reload()">
+        <button
+            class="primary"
+            onclick="location.reload()"
+        >
             🔄 Играть снова
         </button>
+
     </div>
+
 </div>
 
+
 <script>
+
 const tg = window.Telegram.WebApp;
 
 tg.ready();
@@ -328,38 +470,104 @@ tg.expand();
 // ============================================
 
 const suits = [
-    { symbol: "♠", name: "spades", red: false },
-    { symbol: "♥", name: "hearts", red: true },
-    { symbol: "♦", name: "diamonds", red: true },
-    { symbol: "♣", name: "clubs", red: false }
+
+    {
+        symbol: "♠",
+        name: "spades",
+        red: false
+    },
+
+    {
+        symbol: "♥",
+        name: "hearts",
+        red: true
+    },
+
+    {
+        symbol: "♦",
+        name: "diamonds",
+        red: true
+    },
+
+    {
+        symbol: "♣",
+        name: "clubs",
+        red: false
+    }
+
 ];
+
 
 const ranks = [
-    { name: "6", value: 6 },
-    { name: "7", value: 7 },
-    { name: "8", value: 8 },
-    { name: "9", value: 9 },
-    { name: "10", value: 10 },
-    { name: "J", value: 11 },
-    { name: "Q", value: 12 },
-    { name: "K", value: 13 },
-    { name: "A", value: 14 }
+
+    {
+        name: "6",
+        value: 6
+    },
+
+    {
+        name: "7",
+        value: 7
+    },
+
+    {
+        name: "8",
+        value: 8
+    },
+
+    {
+        name: "9",
+        value: 9
+    },
+
+    {
+        name: "10",
+        value: 10
+    },
+
+    {
+        name: "J",
+        value: 11
+    },
+
+    {
+        name: "Q",
+        value: 12
+    },
+
+    {
+        name: "K",
+        value: 13
+    },
+
+    {
+        name: "A",
+        value: 14
+    }
+
 ];
 
+
+// ============================================
+// СОСТОЯНИЕ
+// ============================================
+
 let deck = [];
+
 let trumpSuit = null;
 
 let playerHand = [];
+
 let enemyHand = [];
 
 let table = [];
 
 let attacker = null;
+
 let defender = null;
 
 let phase = "attack";
 
-let roundStartDefenderCards = 0;
 let maxTableCards = 6;
 
 let firstRound = true;
@@ -367,6 +575,8 @@ let firstRound = true;
 let deckFinished = false;
 
 let gameOver = false;
+
+let gameStarted = false;
 
 
 // ============================================
@@ -378,18 +588,27 @@ function createDeck() {
     const cards = [];
 
     for (const suit of suits) {
+
         for (const rank of ranks) {
 
             cards.push({
+
                 id: `${suit.name}_${rank.name}`,
+
                 suit: suit.name,
+
                 symbol: suit.symbol,
+
                 red: suit.red,
+
                 rank: rank.name,
+
                 value: rank.value
+
             });
 
         }
+
     }
 
     return cards;
@@ -402,11 +621,20 @@ function createDeck() {
 
 function shuffle(array) {
 
-    for (let i = array.length - 1; i > 0; i--) {
+    for (
+        let i = array.length - 1;
+        i > 0;
+        i--
+    ) {
 
-        const j = Math.floor(Math.random() * (i + 1));
+        const j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
 
-        [array[i], array[j]] = [array[j], array[i]];
+        [array[i], array[j]] =
+            [array[j], array[i]];
+
     }
 
     return array;
@@ -419,18 +647,39 @@ function shuffle(array) {
 
 function startGame() {
 
+    if (gameStarted) {
+        return;
+    }
+
+    gameStarted = true;
+
+    document
+        .getElementById("startScreen")
+        .classList.add("hidden");
+
+
     deck = shuffle(createDeck());
 
-    playerHand = deck.splice(0, 6);
-    enemyHand = deck.splice(0, 6);
+    playerHand =
+        deck.splice(0, 6);
 
-    // Следующая карта становится открытым козырем
-    const trumpCard = deck.pop();
+    enemyHand =
+        deck.splice(0, 6);
 
-    trumpSuit = trumpCard.suit;
 
-    // Козырная карта находится под колодой
+    // Открываем козырь
+
+    const trumpCard =
+        deck.pop();
+
+    trumpSuit =
+        trumpCard.suit;
+
+
+    // Козырь лежит под колодой
+
     deck.unshift(trumpCard);
+
 
     determineFirstAttacker();
 
@@ -441,30 +690,54 @@ function startGame() {
 
 
 // ============================================
-// КТО ХОДИТ ПЕРВЫМ
+// ПЕРВЫЙ АТАКУЮЩИЙ
 // ============================================
 
 function determineFirstAttacker() {
 
-    let playerTrump = playerHand
-        .filter(card => card.suit === trumpSuit)
-        .sort((a, b) => a.value - b.value);
+    const playerTrump =
+        playerHand
+            .filter(card =>
+                card.suit === trumpSuit
+            )
+            .sort(
+                (a, b) =>
+                    a.value - b.value
+            );
 
-    let enemyTrump = enemyHand
-        .filter(card => card.suit === trumpSuit)
-        .sort((a, b) => a.value - b.value);
 
-    if (playerTrump.length === 0 && enemyTrump.length === 0) {
+    const enemyTrump =
+        enemyHand
+            .filter(card =>
+                card.suit === trumpSuit
+            )
+            .sort(
+                (a, b) =>
+                    a.value - b.value
+            );
 
-        // Редкий случай — пересдаём
+
+    // Если козырей нет вообще
+    // — пересдаём
+
+    if (
+        playerTrump.length === 0 &&
+        enemyTrump.length === 0
+    ) {
+
         deck = shuffle(createDeck());
 
-        playerHand = deck.splice(0, 6);
-        enemyHand = deck.splice(0, 6);
+        playerHand =
+            deck.splice(0, 6);
 
-        const trumpCard = deck.pop();
+        enemyHand =
+            deck.splice(0, 6);
 
-        trumpSuit = trumpCard.suit;
+        const trumpCard =
+            deck.pop();
+
+        trumpSuit =
+            trumpCard.suit;
 
         deck.unshift(trumpCard);
 
@@ -473,117 +746,187 @@ function determineFirstAttacker() {
         return;
     }
 
+
     if (playerTrump.length === 0) {
 
         attacker = "enemy";
+
         defender = "player";
 
-    } else if (enemyTrump.length === 0) {
+    }
+
+    else if (enemyTrump.length === 0) {
 
         attacker = "player";
+
         defender = "enemy";
 
-    } else {
+    }
 
-        if (playerTrump[0].value < enemyTrump[0].value) {
+    else {
+
+        if (
+            playerTrump[0].value <
+            enemyTrump[0].value
+        ) {
 
             attacker = "player";
+
             defender = "enemy";
 
-        } else {
+        }
+
+        else {
 
             attacker = "enemy";
+
             defender = "player";
+
         }
+
     }
 
-    roundStartDefenderCards =
-        defender === "player"
-            ? playerHand.length
-            : enemyHand.length;
-
-    maxTableCards = Math.min(6, roundStartDefenderCards);
-
-    if (firstRound) {
-        maxTableCards = Math.min(5, maxTableCards);
-    }
 }
 
 
 // ============================================
-// НАЧАЛО ХОДА
+// НАЧАЛО КОНА
 // ============================================
 
 function startTurn() {
 
-    if (gameOver) return;
+    if (gameOver) {
+        return;
+    }
+
 
     table = [];
 
-    roundStartDefenderCards =
+
+    const defenderCards =
         defender === "player"
             ? playerHand.length
             : enemyHand.length;
 
-    maxTableCards = Math.min(6, roundStartDefenderCards);
+
+    maxTableCards =
+        Math.min(
+            6,
+            defenderCards
+        );
+
+
+    // В первом кону максимум 5
 
     if (firstRound) {
-        maxTableCards = Math.min(5, maxTableCards);
+
+        maxTableCards =
+            Math.min(
+                5,
+                maxTableCards
+            );
+
     }
+
 
     phase = "attack";
 
     render();
 
+
     if (attacker === "enemy") {
 
-        setTimeout(enemyAttack, 700);
+        updateStatus(
+            "Лава Яша думает..."
+        );
 
-    } else {
+        setTimeout(
+            enemyAttack,
+            700
+        );
 
-        updateStatus("Твой ход — выбери карту для атаки.");
     }
+
+    else {
+
+        updateStatus(
+            "Твой ход — выбери карту для атаки."
+        );
+
+    }
+
 }
 
 
 // ============================================
-// ПРОВЕРКА КОЗЫРЯ
+// КОЗЫРЬ
 // ============================================
 
 function isTrump(card) {
 
     return card.suit === trumpSuit;
+
 }
 
 
 // ============================================
-// МОЖЕТ ЛИ КАРТА ПОБИТЬ
+// МОЖЕТ ЛИ ПОБИТЬ
 // ============================================
 
-function canBeat(attackCard, defenseCard) {
+function canBeat(
+    attackCard,
+    defenseCard
+) {
 
     // Козырь против козыря
-    if (isTrump(attackCard) && isTrump(defenseCard)) {
 
-        return defenseCard.value > attackCard.value;
-    }
-
-    // Некозырная карта
-    if (!isTrump(attackCard) && !isTrump(defenseCard)) {
+    if (
+        isTrump(attackCard) &&
+        isTrump(defenseCard)
+    ) {
 
         return (
-            attackCard.suit === defenseCard.suit &&
-            defenseCard.value > attackCard.value
+            defenseCard.value >
+            attackCard.value
         );
+
     }
 
-    // Козырь бьёт любую некозырную
-    if (!isTrump(attackCard) && isTrump(defenseCard)) {
+
+    // Некозырь против некозыря
+
+    if (
+        !isTrump(attackCard) &&
+        !isTrump(defenseCard)
+    ) {
+
+        return (
+
+            attackCard.suit ===
+            defenseCard.suit
+
+            &&
+
+            defenseCard.value >
+            attackCard.value
+
+        );
+
+    }
+
+
+    // Козырь бьёт обычную карту
+
+    if (
+        !isTrump(attackCard) &&
+        isTrump(defenseCard)
+    ) {
 
         return true;
+
     }
 
-    // Некозырь не бьёт козырь
+
     return false;
 }
 
@@ -598,11 +941,19 @@ function tableRanks() {
 
     for (const pair of table) {
 
-        result.push(pair.attack.rank);
+        result.push(
+            pair.attack.rank
+        );
+
 
         if (pair.defense) {
-            result.push(pair.defense.rank);
+
+            result.push(
+                pair.defense.rank
+            );
+
         }
+
     }
 
     return result;
@@ -615,11 +966,19 @@ function tableRanks() {
 
 function canThrow(card) {
 
-    if (table.length >= maxTableCards) {
+    if (
+        table.length >=
+        maxTableCards
+    ) {
+
         return false;
+
     }
 
-    return tableRanks().includes(card.rank);
+
+    return tableRanks()
+        .includes(card.rank);
+
 }
 
 
@@ -629,31 +988,55 @@ function canThrow(card) {
 
 function playPlayerCard(index) {
 
-    if (gameOver) return;
+    if (gameOver) {
+        return;
+    }
 
-    const card = playerHand[index];
 
-    if (!card) return;
+    const card =
+        playerHand[index];
+
+
+    if (!card) {
+        return;
+    }
 
 
     // ========================================
     // АТАКА
     // ========================================
 
-    if (phase === "attack" && attacker === "player") {
+    if (
+        phase === "attack" &&
+        attacker === "player"
+    ) {
 
-        playerHand.splice(index, 1);
+        playerHand.splice(
+            index,
+            1
+        );
+
 
         table.push({
+
             attack: card,
+
             defense: null
+
         });
+
 
         phase = "defend";
 
+
         render();
 
-        setTimeout(enemyDefend, 650);
+
+        setTimeout(
+            enemyDefend,
+            650
+        );
+
 
         return;
     }
@@ -668,34 +1051,59 @@ function playPlayerCard(index) {
         defender === "player"
     ) {
 
-        const pair = table.find(pair => !pair.defense);
+        const pair =
+            table.find(
+                pair => !pair.defense
+            );
 
-        if (!pair) return;
 
-        if (!canBeat(pair.attack, card)) {
-
-            updateStatus("❌ Этой картой нельзя побить.");
+        if (!pair) {
             return;
         }
 
-        playerHand.splice(index, 1);
 
-        pair.defense = card;
+        if (
+            !canBeat(
+                pair.attack,
+                card
+            )
+        ) {
+
+            updateStatus(
+                "❌ Этой картой нельзя побить."
+            );
+
+            return;
+        }
+
+
+        playerHand.splice(
+            index,
+            1
+        );
+
+
+        pair.defense =
+            card;
+
 
         render();
 
-        // Если все карты побиты
-        if (allCardsDefended()) {
+
+        // Все карты отбиты
+
+        if (
+            allCardsDefended()
+        ) {
 
             phase = "throw";
 
             render();
 
-            updateStatus("Все карты отбиты. Можно подкинуть или нажать «Бито».");
+            updateStatus(
+                "Отбился. Можешь подкинуть или нажать «Бито»."
+            );
 
-        } else {
-
-            setTimeout(enemyThrow, 700);
         }
 
         return;
@@ -711,66 +1119,75 @@ function playPlayerCard(index) {
         attacker === "player"
     ) {
 
-        if (!canThrow(card)) {
+        if (
+            !canThrow(card)
+        ) {
 
-            updateStatus("❌ Можно подкинуть только карту такого же достоинства.");
+            updateStatus(
+                "❌ Можно подкинуть только карту такого же достоинства."
+            );
+
             return;
         }
 
-        playerHand.splice(index, 1);
+
+        playerHand.splice(
+            index,
+            1
+        );
+
 
         table.push({
+
             attack: card,
+
             defense: null
+
         });
+
 
         phase = "defend";
 
+
         render();
 
-        setTimeout(enemyDefend, 650);
+
+        setTimeout(
+            enemyDefend,
+            650
+        );
+
 
         return;
     }
+
 }
 
 
 // ============================================
-// ВСЕ ЛИ КАРТЫ ОТБИТЫ
+// ВСЕ КАРТЫ ОТБИТЫ?
 // ============================================
 
 function allCardsDefended() {
 
-    return table.length > 0 &&
-        table.every(pair => pair.defense !== null);
+    return (
+
+        table.length > 0
+
+        &&
+
+        table.every(
+            pair =>
+                pair.defense !== null
+        )
+
+    );
+
 }
 
 
 // ============================================
-// КНОПКА "БИТО"
-// ============================================
-
-function finishDefense() {
-
-    if (
-        phase !== "throw" ||
-        defender !== "player"
-    ) {
-        return;
-    }
-
-    if (!allCardsDefended()) {
-
-        updateStatus("Сначала нужно отбить все карты.");
-        return;
-    }
-
-    finishRound(true);
-}
-
-
-// ============================================
-// ВЗЯТЬ КАРТЫ
+// ВЗЯТЬ
 // ============================================
 
 function takeCards() {
@@ -779,102 +1196,169 @@ function takeCards() {
         phase !== "defend" ||
         defender !== "player"
     ) {
+
         return;
     }
 
-    // Забираем все карты
-    for (const pair of table) {
 
-        playerHand.push(pair.attack);
+    for (
+        const pair of table
+    ) {
+
+        playerHand.push(
+            pair.attack
+        );
+
 
         if (pair.defense) {
-            playerHand.push(pair.defense);
+
+            playerHand.push(
+                pair.defense
+            );
+
         }
+
     }
+
 
     table = [];
 
-    // После взятия игрок пропускает атаку.
-    // Значит атакующим становится Лава Яша.
+
+    // Игрок забрал —
+    // он пропускает следующий ход.
+
     attacker = "enemy";
+
     defender = "player";
 
+
     firstRound = false;
+
+
+    drawCards();
+
 
     render();
 
-    drawCards();
 
     checkEndAfterRound();
 
+
     if (!gameOver) {
 
-        setTimeout(startTurn, 700);
+        setTimeout(
+            startTurn,
+            700
+        );
+
     }
+
 }
 
 
 // ============================================
-// ЗАВЕРШЕНИЕ КОНА
+// БИТО
 // ============================================
 
-function finishRound(success) {
+function finishRound() {
 
-    if (gameOver) return;
-
-    if (!success) {
+    if (gameOver) {
         return;
     }
 
+
+    if (
+        !allCardsDefended()
+    ) {
+
+        updateStatus(
+            "Сначала нужно отбиться от всех карт."
+        );
+
+        return;
+    }
+
+
     table = [];
 
-    // Отбившийся становится атакующим
-    const oldDefender = defender;
 
-    attacker = oldDefender;
-    defender = oldDefender === "player"
-        ? "enemy"
-        : "player";
+    // ВАЖНО:
+    // отбившийся становится атакующим.
+
+    const oldDefender =
+        defender;
+
+
+    attacker =
+        oldDefender;
+
+
+    defender =
+        oldDefender === "player"
+            ? "enemy"
+            : "player";
+
 
     firstRound = false;
 
+
     drawCards();
+
 
     checkEndAfterRound();
 
+
     if (!gameOver) {
 
-        setTimeout(startTurn, 700);
+        setTimeout(
+            startTurn,
+            700
+        );
+
     }
+
 }
 
 
 // ============================================
-// ДОБОР КАРТ
+// ДОБОР
 // ============================================
 
 function drawCards() {
 
-    if (deck.length === 0) {
+    if (
+        deck.length === 0
+    ) {
 
         deckFinished = true;
+
         return;
     }
 
+
     // Сначала атакующий
+
     drawFor(attacker);
 
-    // Затем второй игрок
+
+    // Потом защищающийся
+
     drawFor(defender);
 
-    if (deck.length === 0) {
+
+    if (
+        deck.length === 0
+    ) {
+
         deckFinished = true;
+
     }
+
 }
 
 
 // ============================================
-// ДОБОР ДЛЯ ИГРОКА
+// ДОБОР КОНКРЕТНОГО ИГРОКА
 // ============================================
 
 function drawFor(who) {
@@ -884,60 +1368,101 @@ function drawFor(who) {
             ? playerHand
             : enemyHand;
 
+
     while (
         hand.length < 6 &&
         deck.length > 0
     ) {
 
-        hand.push(deck.shift());
+        hand.push(
+            deck.shift()
+        );
+
     }
+
 }
 
 
 // ============================================
-// ХОД ЛАВЫ ЯШИ — АТАКА
+// АТАКА ЛАВЫ ЯШИ
 // ============================================
 
 function enemyAttack() {
 
-    if (gameOver) return;
-
-    if (enemyHand.length === 0) {
-
-        checkEndAfterRound();
+    if (gameOver) {
         return;
     }
 
-    // ИИ старается атаковать самой дешёвой картой
-    const sorted = [...enemyHand]
-        .sort((a, b) => {
 
-            if (isTrump(a) !== isTrump(b)) {
-                return isTrump(a) ? 1 : -1;
-            }
+    if (
+        enemyHand.length === 0
+    ) {
 
-            return a.value - b.value;
-        });
+        checkEndAfterRound();
 
-    const card = sorted[0];
+        return;
+    }
 
-    const index = enemyHand.indexOf(card);
 
-    enemyHand.splice(index, 1);
+    const sorted =
+        [...enemyHand]
+            .sort(
+                (a, b) => {
+
+                    if (
+                        isTrump(a) !==
+                        isTrump(b)
+                    ) {
+
+                        return isTrump(a)
+                            ? 1
+                            : -1;
+
+                    }
+
+
+                    return (
+                        a.value -
+                        b.value
+                    );
+
+                }
+            );
+
+
+    const card =
+        sorted[0];
+
+
+    const index =
+        enemyHand.indexOf(card);
+
+
+    enemyHand.splice(
+        index,
+        1
+    );
+
 
     table.push({
+
         attack: card,
+
         defense: null
+
     });
+
 
     phase = "defend";
 
+
     render();
 
-    if (defender === "player") {
 
-        updateStatus("Лава Яша атакует. Твоя очередь защищаться.");
-    }
+    updateStatus(
+        "Лава Яша атакует. Защищайся."
+    );
+
 }
 
 
@@ -947,223 +1472,280 @@ function enemyAttack() {
 
 function enemyDefend() {
 
-    if (gameOver) return;
+    if (gameOver) {
+        return;
+    }
 
-    const pair = table.find(pair => !pair.defense);
 
-    if (!pair) return;
+    const pair =
+        table.find(
+            pair => !pair.defense
+        );
 
-    const possible = enemyHand
-        .filter(card => canBeat(pair.attack, card))
-        .sort((a, b) => {
 
-            // Сначала некозырные
-            if (isTrump(a) !== isTrump(b)) {
-                return isTrump(a) ? 1 : -1;
-            }
+    if (!pair) {
+        return;
+    }
 
-            return a.value - b.value;
-        });
 
-    // Не может отбиться
-    if (possible.length === 0) {
+    const possible =
+        enemyHand
+            .filter(
+                card =>
+                    canBeat(
+                        pair.attack,
+                        card
+                    )
+            )
+            .sort(
+                (a, b) => {
+
+                    if (
+                        isTrump(a) !==
+                        isTrump(b)
+                    ) {
+
+                        return isTrump(a)
+                            ? 1
+                            : -1;
+
+                    }
+
+
+                    return (
+                        a.value -
+                        b.value
+                    );
+
+                }
+            );
+
+
+    // Не смог отбиться
+
+    if (
+        possible.length === 0
+    ) {
 
         enemyTake();
 
         return;
     }
 
-    const card = possible[0];
 
-    const index = enemyHand.indexOf(card);
+    // Берём самую дешёвую
+    // подходящую карту
 
-    enemyHand.splice(index, 1);
-
-    pair.defense = card;
-
-    render();
-
-    // Если есть ещё карты для защиты
-    if (!allCardsDefended()) {
-
-        setTimeout(enemyDefend, 650);
-
-        return;
-    }
-
-    // Теперь Лава Яша должна решить,
-    // подкидывать ли ещё
-    phase = "throw";
-
-    render();
-
-    setTimeout(enemyThrowDecision, 700);
-}
+    const card =
+        possible[0];
 
 
-// ============================================
-// РЕШЕНИЕ ЛАВЫ ЯШИ О ПОДКИДЫВАНИИ
-// ============================================
+    const index =
+        enemyHand.indexOf(card);
 
-function enemyThrowDecision() {
 
-    if (gameOver) return;
-
-    if (!allCardsDefended()) {
-        return;
-    }
-
-    if (table.length >= maxTableCards) {
-
-        finishRound(true);
-        return;
-    }
-
-    const possible = enemyHand.filter(card =>
-        canThrow(card)
+    enemyHand.splice(
+        index,
+        1
     );
 
-    if (possible.length === 0) {
 
-        finishRound(true);
-        return;
-    }
+    pair.defense =
+        card;
 
-    /*
-        ИИ иногда подкидывает, иногда говорит "Бито".
-        Но никогда не подкидывает карту,
-        которая не подходит по достоинству.
-    */
-
-    const shouldThrow =
-        Math.random() < 0.65;
-
-    if (!shouldThrow) {
-
-        finishRound(true);
-        return;
-    }
-
-    possible.sort((a, b) => {
-
-        if (isTrump(a) !== isTrump(b)) {
-            return isTrump(a) ? 1 : -1;
-        }
-
-        return a.value - b.value;
-    });
-
-    const card = possible[0];
-
-    const index = enemyHand.indexOf(card);
-
-    enemyHand.splice(index, 1);
-
-    table.push({
-        attack: card,
-        defense: null
-    });
-
-    phase = "defend";
 
     render();
 
-    setTimeout(() => {
 
-        if (defender === "player") {
+    // Если осталось что отбивать
 
-            updateStatus("Лава Яша подкинул карту. Защищайся.");
-        }
+    if (
+        !allCardsDefended()
+    ) {
 
-    }, 300);
+        setTimeout(
+            enemyDefend,
+            650
+        );
+
+        return;
+    }
+
+
+    /*
+        ВАЖНО:
+
+        Лава Яша только что отбилась.
+
+        Он НЕ подкидывает.
+
+        Теперь атакующий снова получает
+        право решить, подкидывать или
+        закончить кон.
+
+        В нашей игре атакующий здесь —
+        игрок.
+    */
+
+    phase = "throw";
+
+
+    render();
+
+
+    updateStatus(
+        "Лава Яша отбился. Подкинь карту или нажми «Бито»."
+    );
+
 }
 
 
 // ============================================
-// ЛАВА ЯША НЕ МОЖЕТ ОТБИТЬСЯ
+// ЛАВА ЯША ЗАБИРАЕТ
 // ============================================
 
 function enemyTake() {
 
-    for (const pair of table) {
+    for (
+        const pair of table
+    ) {
 
-        enemyHand.push(pair.attack);
+        enemyHand.push(
+            pair.attack
+        );
+
 
         if (pair.defense) {
-            enemyHand.push(pair.defense);
+
+            enemyHand.push(
+                pair.defense
+            );
+
         }
+
     }
+
 
     table = [];
 
-    // После взятия атакующим остаётся тот,
-    // кто атаковал изначально
+
+    // Лава Яша забрал.
+
+    // Поэтому он пропускает следующий ход.
+    // Ты остаёшься атакующим.
+
     attacker = "player";
+
     defender = "enemy";
+
 
     firstRound = false;
 
+
     drawCards();
+
 
     render();
 
+
     checkEndAfterRound();
+
 
     if (!gameOver) {
 
-        setTimeout(startTurn, 700);
+        setTimeout(
+            startTurn,
+            700
+        );
+
     }
+
 }
 
 
 // ============================================
-// ПОДСКАЗКИ И КНОПКИ
+// КНОПКИ
 // ============================================
 
 function renderControls() {
 
-    const controls = document.getElementById("controls");
+    const controls =
+        document.getElementById(
+            "controls"
+        );
+
 
     controls.innerHTML = "";
 
 
-    // Игрок защищается
+    // Защита игрока
+
     if (
         phase === "defend" &&
         defender === "player"
     ) {
 
-        const takeButton = document.createElement("button");
+        const button =
+            document.createElement(
+                "button"
+            );
 
-        takeButton.className = "primary";
-        takeButton.textContent = "🙌 Взять";
 
-        takeButton.onclick = takeCards;
+        button.className =
+            "primary";
 
-        controls.appendChild(takeButton);
+
+        button.textContent =
+            "🙌 Взять";
+
+
+        button.onclick =
+            takeCards;
+
+
+        controls.appendChild(
+            button
+        );
+
 
         return;
     }
 
 
-    // Игрок может закончить атаку
+    // Бито
+
     if (
         phase === "throw" &&
         attacker === "player" &&
         allCardsDefended()
     ) {
 
-        const doneButton = document.createElement("button");
+        const button =
+            document.createElement(
+                "button"
+            );
 
-        doneButton.className = "green";
-        doneButton.textContent = "✅ Бито";
 
-        doneButton.onclick = () => finishRound(true);
+        button.className =
+            "green";
 
-        controls.appendChild(doneButton);
+
+        button.textContent =
+            "✅ Бито";
+
+
+        button.onclick =
+            finishRound;
+
+
+        controls.appendChild(
+            button
+        );
+
 
         return;
     }
+
 }
 
 
@@ -1173,7 +1755,10 @@ function renderControls() {
 
 function updateStatus(text) {
 
-    document.getElementById("status").textContent = text;
+    document.getElementById(
+        "status"
+    ).textContent = text;
+
 }
 
 
@@ -1184,20 +1769,38 @@ function updateStatus(text) {
 function render() {
 
     renderEnemyCards();
+
     renderPlayerCards();
+
     renderTable();
+
     renderControls();
 
-    document.getElementById("deckInfo").textContent =
+
+    document.getElementById(
+        "deckInfo"
+    ).textContent =
+
         deckFinished
+
             ? "Колода закончилась"
+
             : `Колода: ${deck.length}`;
 
-    document.getElementById("trumpInfo").textContent =
+
+    document.getElementById(
+        "trumpInfo"
+    ).textContent =
+
         `Козырь: ${getSuitSymbol(trumpSuit)}`;
 
-    document.getElementById("roundInfo").textContent =
+
+    document.getElementById(
+        "roundInfo"
+    ).textContent =
+
         `У тебя: ${playerHand.length} • У Лавы Яши: ${enemyHand.length}`;
+
 }
 
 
@@ -1207,20 +1810,41 @@ function render() {
 
 function renderEnemyCards() {
 
-    const container = document.getElementById("enemyCards");
+    const container =
+        document.getElementById(
+            "enemyCards"
+        );
+
 
     container.innerHTML = "";
 
-    for (let i = 0; i < enemyHand.length; i++) {
 
-        const card = document.createElement("div");
+    for (
+        let i = 0;
+        i < enemyHand.length;
+        i++
+    ) {
 
-        card.className = "card back";
+        const card =
+            document.createElement(
+                "div"
+            );
 
-        card.textContent = "🔥";
 
-        container.appendChild(card);
+        card.className =
+            "card back";
+
+
+        card.textContent =
+            "🔥";
+
+
+        container.appendChild(
+            card
+        );
+
     }
+
 }
 
 
@@ -1230,75 +1854,147 @@ function renderEnemyCards() {
 
 function renderPlayerCards() {
 
-    const container = document.getElementById("playerCards");
+    const container =
+        document.getElementById(
+            "playerCards"
+        );
+
 
     container.innerHTML = "";
 
-    playerHand.forEach((card, index) => {
 
-        const element = document.createElement("div");
+    playerHand.forEach(
+        (card, index) => {
 
-        element.className =
-            "card" + (card.red ? " red" : "");
+            const element =
+                document.createElement(
+                    "div"
+                );
 
-        element.innerHTML = `
-            <div>${card.rank}</div>
-            <div>${card.symbol}</div>
-        `;
 
-        let disabled = false;
+            element.className =
+                "card" +
+                (
+                    card.red
+                        ? " red"
+                        : ""
+                );
 
-        if (
-            phase === "defend" &&
-            defender === "player"
-        ) {
 
-            const pair = table.find(pair => !pair.defense);
+            element.innerHTML = `
 
-            if (!pair || !canBeat(pair.attack, card)) {
-                disabled = true;
+                <div>
+                    ${card.rank}
+                </div>
+
+                <div>
+                    ${card.symbol}
+                </div>
+
+            `;
+
+
+            let disabled = false;
+
+
+            // Защита
+
+            if (
+                phase === "defend" &&
+                defender === "player"
+            ) {
+
+                const pair =
+                    table.find(
+                        pair =>
+                            !pair.defense
+                    );
+
+
+                if (
+                    !pair ||
+                    !canBeat(
+                        pair.attack,
+                        card
+                    )
+                ) {
+
+                    disabled = true;
+
+                }
+
             }
-        }
 
-        if (
-            phase === "throw" &&
-            attacker === "player"
-        ) {
 
-            if (!canThrow(card)) {
-                disabled = true;
+            // Подкидывание
+
+            if (
+                phase === "throw" &&
+                attacker === "player"
+            ) {
+
+                if (
+                    !canThrow(card)
+                ) {
+
+                    disabled = true;
+
+                }
+
             }
+
+
+            // Не наше действие
+
+            if (
+                phase !== "attack" &&
+                phase !== "defend" &&
+                phase !== "throw"
+            ) {
+
+                disabled = true;
+
+            }
+
+
+            // Атака
+
+            if (
+                phase === "attack" &&
+                attacker === "player"
+            ) {
+
+                disabled = false;
+
+            }
+
+
+            if (disabled) {
+
+                element.classList.add(
+                    "disabled"
+                );
+
+            }
+
+            else {
+
+                element.onclick =
+                    () =>
+                        playPlayerCard(
+                            index
+                        );
+
+            }
+
+
+            container.appendChild(
+                element
+            );
+
         }
+    );
 
-        if (
-            phase !== "attack" &&
-            phase !== "defend" &&
-            phase !== "throw"
-        ) {
-
-            disabled = true;
-        }
-
-        if (
-            phase === "attack" &&
-            attacker === "player"
-        ) {
-            // Все карты доступны
-        }
-
-        if (disabled) {
-
-            element.classList.add("disabled");
-
-        } else {
-
-            element.onclick = () => {
-                playPlayerCard(index);
-            };
-        }
-
-        container.appendChild(element);
-    });
 }
 
 
@@ -1308,35 +2004,73 @@ function renderPlayerCards() {
 
 function renderTable() {
 
-    const container = document.getElementById("tableCards");
+    const container =
+        document.getElementById(
+            "tableCards"
+        );
+
 
     container.innerHTML = "";
 
-    table.forEach(pair => {
 
-        const pairElement = document.createElement("div");
+    table.forEach(
+        pair => {
 
-        pairElement.className = "pair";
-
-
-        const attack = createSmallCard(pair.attack);
-
-        attack.classList.add("attack");
-
-        pairElement.appendChild(attack);
+            const pairElement =
+                document.createElement(
+                    "div"
+                );
 
 
-        if (pair.defense) {
+            pairElement.className =
+                "pair";
 
-            const defense = createSmallCard(pair.defense);
 
-            defense.classList.add("defense");
+            const attack =
+                createSmallCard(
+                    pair.attack
+                );
 
-            pairElement.appendChild(defense);
+
+            attack.classList.add(
+                "attack"
+            );
+
+
+            pairElement.appendChild(
+                attack
+            );
+
+
+            if (
+                pair.defense
+            ) {
+
+                const defense =
+                    createSmallCard(
+                        pair.defense
+                    );
+
+
+                defense.classList.add(
+                    "defense"
+                );
+
+
+                pairElement.appendChild(
+                    defense
+                );
+
+            }
+
+
+            container.appendChild(
+                pairElement
+            );
+
         }
+    );
 
-        container.appendChild(pairElement);
-    });
 }
 
 
@@ -1346,18 +2080,36 @@ function renderTable() {
 
 function createSmallCard(card) {
 
-    const element = document.createElement("div");
+    const element =
+        document.createElement(
+            "div"
+        );
+
 
     element.className =
         "card small-card" +
-        (card.red ? " red" : "");
+        (
+            card.red
+                ? " red"
+                : ""
+        );
+
 
     element.innerHTML = `
-        <div>${card.rank}</div>
-        <div>${card.symbol}</div>
+
+        <div>
+            ${card.rank}
+        </div>
+
+        <div>
+            ${card.symbol}
+        </div>
+
     `;
 
+
     return element;
+
 }
 
 
@@ -1367,9 +2119,17 @@ function createSmallCard(card) {
 
 function getSuitSymbol(suit) {
 
-    const found = suits.find(s => s.name === suit);
+    const found =
+        suits.find(
+            s =>
+                s.name === suit
+        );
 
-    return found ? found.symbol : "—";
+
+    return found
+        ? found.symbol
+        : "—";
+
 }
 
 
@@ -1383,12 +2143,21 @@ function checkEndAfterRound() {
         return;
     }
 
-    const playerEmpty = playerHand.length === 0;
-    const enemyEmpty = enemyHand.length === 0;
+
+    const playerEmpty =
+        playerHand.length === 0;
 
 
-    // Одновременно закончились карты
-    if (playerEmpty && enemyEmpty) {
+    const enemyEmpty =
+        enemyHand.length === 0;
+
+
+    // Оба закончили одновременно
+
+    if (
+        playerEmpty &&
+        enemyEmpty
+    ) {
 
         endGame(
             "🤝 Ничья!",
@@ -1419,6 +2188,7 @@ function checkEndAfterRound() {
 
         return;
     }
+
 }
 
 
@@ -1426,23 +2196,31 @@ function checkEndAfterRound() {
 // КОНЕЦ ИГРЫ
 // ============================================
 
-function endGame(title, text) {
+function endGame(
+    title,
+    text
+) {
 
     gameOver = true;
 
-    document.getElementById("resultTitle").textContent = title;
 
-    document.getElementById("resultText").textContent = text;
+    document.getElementById(
+        "resultTitle"
+    ).textContent = title;
 
-    document.getElementById("gameOver").classList.add("show");
+
+    document.getElementById(
+        "resultText"
+    ).textContent = text;
+
+
+    document.getElementById(
+        "gameOver"
+    ).classList.add(
+        "show"
+    );
+
 }
-
-
-// ============================================
-// ЗАПУСК
-// ============================================
-
-startGame();
 
 </script>
 
