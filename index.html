@@ -203,8 +203,6 @@
             margin-top: 3px;
         }
 
-        /* START SCREEN */
-
         .start-screen {
             position: fixed;
             inset: 0;
@@ -241,8 +239,6 @@
             font-size: 16px;
             margin-bottom: 30px;
         }
-
-        /* GAME OVER */
 
         .overlay {
             position: fixed;
@@ -298,11 +294,6 @@
 
 <body>
 
-
-<!-- ========================================= -->
-<!-- ЭКРАН НАЧАЛА -->
-<!-- ========================================= -->
-
 <div class="start-screen" id="startScreen">
 
     <div class="start-box">
@@ -329,10 +320,6 @@
 </div>
 
 
-<!-- ========================================= -->
-<!-- ИГРА -->
-<!-- ========================================= -->
-
 <div id="game">
 
     <div class="top">
@@ -350,9 +337,6 @@
 
     <div class="table">
 
-
-        <!-- ЛАВА ЯША -->
-
         <div class="player-area">
 
             <div class="name">
@@ -366,8 +350,6 @@
 
         </div>
 
-
-        <!-- СТОЛ -->
 
         <div class="table-area">
 
@@ -393,8 +375,6 @@
         </div>
 
 
-        <!-- ИГРОК -->
-
         <div class="player-area">
 
             <div
@@ -404,17 +384,14 @@
                 Нажми «Начать игру»
             </div>
 
-
             <div
                 class="controls"
                 id="controls"
             ></div>
 
-
             <div class="name">
                 👤 Ты
             </div>
-
 
             <div
                 class="cards"
@@ -427,10 +404,6 @@
 
 </div>
 
-
-<!-- ========================================= -->
-<!-- КОНЕЦ ИГРЫ -->
-<!-- ========================================= -->
 
 <div
     class="overlay"
@@ -500,50 +473,15 @@ const suits = [
 
 const ranks = [
 
-    {
-        name: "6",
-        value: 6
-    },
-
-    {
-        name: "7",
-        value: 7
-    },
-
-    {
-        name: "8",
-        value: 8
-    },
-
-    {
-        name: "9",
-        value: 9
-    },
-
-    {
-        name: "10",
-        value: 10
-    },
-
-    {
-        name: "J",
-        value: 11
-    },
-
-    {
-        name: "Q",
-        value: 12
-    },
-
-    {
-        name: "K",
-        value: 13
-    },
-
-    {
-        name: "A",
-        value: 14
-    }
+    { name: "6", value: 6 },
+    { name: "7", value: 7 },
+    { name: "8", value: 8 },
+    { name: "9", value: 9 },
+    { name: "10", value: 10 },
+    { name: "J", value: 11 },
+    { name: "Q", value: 12 },
+    { name: "K", value: 13 },
+    { name: "A", value: 14 }
 
 ];
 
@@ -594,15 +532,10 @@ function createDeck() {
             cards.push({
 
                 id: `${suit.name}_${rank.name}`,
-
                 suit: suit.name,
-
                 symbol: suit.symbol,
-
                 red: suit.red,
-
                 rank: rank.name,
-
                 value: rank.value
 
             });
@@ -642,7 +575,7 @@ function shuffle(array) {
 
 
 // ============================================
-// НАЧАЛО ИГРЫ
+// НАЧАЛО
 // ============================================
 
 function startGame() {
@@ -660,25 +593,27 @@ function startGame() {
 
     deck = shuffle(createDeck());
 
+
     playerHand =
         deck.splice(0, 6);
+
 
     enemyHand =
         deck.splice(0, 6);
 
 
-    // Открываем козырь
-
     const trumpCard =
         deck.pop();
+
 
     trumpSuit =
         trumpCard.suit;
 
 
-    // Козырь лежит под колодой
+    // Козырь — нижняя карта колоды,
+    // то есть будет взят последним.
 
-    deck.unshift(trumpCard);
+    deck.push(trumpCard);
 
 
     determineFirstAttacker();
@@ -690,15 +625,16 @@ function startGame() {
 
 
 // ============================================
-// ПЕРВЫЙ АТАКУЮЩИЙ
+// ПЕРВЫЙ ХОД
 // ============================================
 
 function determineFirstAttacker() {
 
     const playerTrump =
         playerHand
-            .filter(card =>
-                card.suit === trumpSuit
+            .filter(
+                card =>
+                    card.suit === trumpSuit
             )
             .sort(
                 (a, b) =>
@@ -708,17 +644,15 @@ function determineFirstAttacker() {
 
     const enemyTrump =
         enemyHand
-            .filter(card =>
-                card.suit === trumpSuit
+            .filter(
+                card =>
+                    card.suit === trumpSuit
             )
             .sort(
                 (a, b) =>
                     a.value - b.value
             );
 
-
-    // Если козырей нет вообще
-    // — пересдаём
 
     if (
         playerTrump.length === 0 &&
@@ -739,7 +673,7 @@ function determineFirstAttacker() {
         trumpSuit =
             trumpCard.suit;
 
-        deck.unshift(trumpCard);
+        deck.push(trumpCard);
 
         determineFirstAttacker();
 
@@ -750,7 +684,6 @@ function determineFirstAttacker() {
     if (playerTrump.length === 0) {
 
         attacker = "enemy";
-
         defender = "player";
 
     }
@@ -758,31 +691,24 @@ function determineFirstAttacker() {
     else if (enemyTrump.length === 0) {
 
         attacker = "player";
+        defender = "enemy";
 
+    }
+
+    else if (
+        playerTrump[0].value <
+        enemyTrump[0].value
+    ) {
+
+        attacker = "player";
         defender = "enemy";
 
     }
 
     else {
 
-        if (
-            playerTrump[0].value <
-            enemyTrump[0].value
-        ) {
-
-            attacker = "player";
-
-            defender = "enemy";
-
-        }
-
-        else {
-
-            attacker = "enemy";
-
-            defender = "player";
-
-        }
+        attacker = "enemy";
+        defender = "player";
 
     }
 
@@ -790,7 +716,7 @@ function determineFirstAttacker() {
 
 
 // ============================================
-// НАЧАЛО КОНА
+// НОВЫЙ КОН
 // ============================================
 
 function startTurn() {
@@ -816,8 +742,6 @@ function startTurn() {
         );
 
 
-    // В первом кону максимум 5
-
     if (firstRound) {
 
         maxTableCards =
@@ -831,13 +755,14 @@ function startTurn() {
 
     phase = "attack";
 
+
     render();
 
 
     if (attacker === "enemy") {
 
         updateStatus(
-            "Лава Яша думает..."
+            "Лава Яша атакует..."
         );
 
         setTimeout(
@@ -850,7 +775,7 @@ function startTurn() {
     else {
 
         updateStatus(
-            "Твой ход — выбери карту для атаки."
+            "Твой ход — выбери карту."
         );
 
     }
@@ -870,15 +795,13 @@ function isTrump(card) {
 
 
 // ============================================
-// МОЖЕТ ЛИ ПОБИТЬ
+// МОЖЕТ ПОБИТЬ
 // ============================================
 
 function canBeat(
     attackCard,
     defenseCard
 ) {
-
-    // Козырь против козыря
 
     if (
         isTrump(attackCard) &&
@@ -892,8 +815,6 @@ function canBeat(
 
     }
 
-
-    // Некозырь против некозыря
 
     if (
         !isTrump(attackCard) &&
@@ -915,8 +836,6 @@ function canBeat(
     }
 
 
-    // Козырь бьёт обычную карту
-
     if (
         !isTrump(attackCard) &&
         isTrump(defenseCard)
@@ -932,7 +851,7 @@ function canBeat(
 
 
 // ============================================
-// НОМИНАЛЫ НА СТОЛЕ
+// РАНГИ НА СТОЛЕ
 // ============================================
 
 function tableRanks() {
@@ -961,14 +880,13 @@ function tableRanks() {
 
 
 // ============================================
-// МОЖНО ЛИ ПОДКИНУТЬ
+// МОЖНО ПОДКИНУТЬ?
 // ============================================
 
 function canThrow(card) {
 
     if (
-        table.length >=
-        maxTableCards
+        table.length >= maxTableCards
     ) {
 
         return false;
@@ -983,7 +901,7 @@ function canThrow(card) {
 
 
 // ============================================
-// ХОД ИГРОКА
+// ИГРОК ИГРАЕТ КАРТОЙ
 // ============================================
 
 function playPlayerCard(index) {
@@ -1020,7 +938,6 @@ function playPlayerCard(index) {
         table.push({
 
             attack: card,
-
             defense: null
 
         });
@@ -1030,6 +947,11 @@ function playPlayerCard(index) {
 
 
         render();
+
+
+        updateStatus(
+            "Лава Яша отбивается..."
+        );
 
 
         setTimeout(
@@ -1053,7 +975,8 @@ function playPlayerCard(index) {
 
         const pair =
             table.find(
-                pair => !pair.defense
+                pair =>
+                    !pair.defense
             );
 
 
@@ -1090,21 +1013,35 @@ function playPlayerCard(index) {
         render();
 
 
-        // Все карты отбиты
+        // Все отбиты
 
         if (
             allCardsDefended()
         ) {
 
+            /*
+             * Теперь атакующий — Лава Яша.
+             * Он решает, подкинуть или сказать Бито.
+             */
+
             phase = "throw";
+
 
             render();
 
+
             updateStatus(
-                "Отбился. Можешь подкинуть или нажать «Бито»."
+                "Ты отбился. Лава Яша решает, подкинуть ли ещё."
+            );
+
+
+            setTimeout(
+                enemyThrow,
+                700
             );
 
         }
+
 
         return;
     }
@@ -1140,7 +1077,6 @@ function playPlayerCard(index) {
         table.push({
 
             attack: card,
-
             defense: null
 
         });
@@ -1150,6 +1086,11 @@ function playPlayerCard(index) {
 
 
         render();
+
+
+        updateStatus(
+            "Лава Яша отбивается..."
+        );
 
 
         setTimeout(
@@ -1165,16 +1106,14 @@ function playPlayerCard(index) {
 
 
 // ============================================
-// ВСЕ КАРТЫ ОТБИТЫ?
+// ВСЕ ОТБИТЫ
 // ============================================
 
 function allCardsDefended() {
 
     return (
 
-        table.length > 0
-
-        &&
+        table.length > 0 &&
 
         table.every(
             pair =>
@@ -1201,9 +1140,7 @@ function takeCards() {
     }
 
 
-    for (
-        const pair of table
-    ) {
+    for (const pair of table) {
 
         playerHand.push(
             pair.attack
@@ -1224,8 +1161,8 @@ function takeCards() {
     table = [];
 
 
-    // Игрок забрал —
-    // он пропускает следующий ход.
+    // Взявший пропускает атаку.
+    // Атакующий остаётся тем же.
 
     attacker = "enemy";
 
@@ -1272,7 +1209,7 @@ function finishRound() {
     ) {
 
         updateStatus(
-            "Сначала нужно отбиться от всех карт."
+            "❌ Не все карты отбиты."
         );
 
         return;
@@ -1282,12 +1219,11 @@ function finishRound() {
     table = [];
 
 
-    // ВАЖНО:
-    // отбившийся становится атакующим.
-
     const oldDefender =
         defender;
 
+
+    // Отбившийся становится атакующим.
 
     attacker =
         oldDefender;
@@ -1321,69 +1257,6 @@ function finishRound() {
 
 
 // ============================================
-// ДОБОР
-// ============================================
-
-function drawCards() {
-
-    if (
-        deck.length === 0
-    ) {
-
-        deckFinished = true;
-
-        return;
-    }
-
-
-    // Сначала атакующий
-
-    drawFor(attacker);
-
-
-    // Потом защищающийся
-
-    drawFor(defender);
-
-
-    if (
-        deck.length === 0
-    ) {
-
-        deckFinished = true;
-
-    }
-
-}
-
-
-// ============================================
-// ДОБОР КОНКРЕТНОГО ИГРОКА
-// ============================================
-
-function drawFor(who) {
-
-    const hand =
-        who === "player"
-            ? playerHand
-            : enemyHand;
-
-
-    while (
-        hand.length < 6 &&
-        deck.length > 0
-    ) {
-
-        hand.push(
-            deck.shift()
-        );
-
-    }
-
-}
-
-
-// ============================================
 // АТАКА ЛАВЫ ЯШИ
 // ============================================
 
@@ -1397,8 +1270,6 @@ function enemyAttack() {
     if (
         enemyHand.length === 0
     ) {
-
-        checkEndAfterRound();
 
         return;
     }
@@ -1419,7 +1290,6 @@ function enemyAttack() {
                             : -1;
 
                     }
-
 
                     return (
                         a.value -
@@ -1447,7 +1317,6 @@ function enemyAttack() {
     table.push({
 
         attack: card,
-
         defense: null
 
     });
@@ -1479,7 +1348,8 @@ function enemyDefend() {
 
     const pair =
         table.find(
-            pair => !pair.defense
+            pair =>
+                !pair.defense
         );
 
 
@@ -1511,7 +1381,6 @@ function enemyDefend() {
 
                     }
 
-
                     return (
                         a.value -
                         b.value
@@ -1532,9 +1401,6 @@ function enemyDefend() {
         return;
     }
 
-
-    // Берём самую дешёвую
-    // подходящую карту
 
     const card =
         possible[0];
@@ -1557,7 +1423,7 @@ function enemyDefend() {
     render();
 
 
-    // Если осталось что отбивать
+    // Осталась ещё карта для защиты
 
     if (
         !allCardsDefended()
@@ -1573,19 +1439,12 @@ function enemyDefend() {
 
 
     /*
-        ВАЖНО:
-
-        Лава Яша только что отбилась.
-
-        Он НЕ подкидывает.
-
-        Теперь атакующий снова получает
-        право решить, подкидывать или
-        закончить кон.
-
-        В нашей игре атакующий здесь —
-        игрок.
-    */
+     * Лава Яша полностью отбился.
+     *
+     * Теперь он НЕ подкидывает.
+     * Право подкидывать принадлежит тебе,
+     * потому что ты атакующий.
+     */
 
     phase = "throw";
 
@@ -1594,7 +1453,80 @@ function enemyDefend() {
 
 
     updateStatus(
-        "Лава Яша отбился. Подкинь карту или нажми «Бито»."
+        "🔥 Лава Яша отбился. Подкинь карту или нажми «Бито»."
+    );
+
+}
+
+
+// ============================================
+// ЛАВА ЯША РЕШАЕТ, ПОДКИДЫВАТЬ ЛИ
+// ============================================
+
+function enemyThrow() {
+
+    if (gameOver) {
+        return;
+    }
+
+
+    if (
+        phase !== "throw" ||
+        attacker !== "enemy"
+    ) {
+
+        return;
+    }
+
+
+    const possible =
+        enemyHand.find(
+            card =>
+                canThrow(card)
+        );
+
+
+    // Нет карты для подкидывания —
+    // автоматически БИТО.
+
+    if (!possible) {
+
+        finishRound();
+
+        return;
+    }
+
+
+    // Есть карта — подкидываем.
+
+    const index =
+        enemyHand.indexOf(
+            possible
+        );
+
+
+    enemyHand.splice(
+        index,
+        1
+    );
+
+
+    table.push({
+
+        attack: possible,
+        defense: null
+
+    });
+
+
+    phase = "defend";
+
+
+    render();
+
+
+    updateStatus(
+        "🔥 Лава Яша подкинул карту. Защищайся."
     );
 
 }
@@ -1606,9 +1538,7 @@ function enemyDefend() {
 
 function enemyTake() {
 
-    for (
-        const pair of table
-    ) {
+    for (const pair of table) {
 
         enemyHand.push(
             pair.attack
@@ -1629,10 +1559,8 @@ function enemyTake() {
     table = [];
 
 
-    // Лава Яша забрал.
-
-    // Поэтому он пропускает следующий ход.
-    // Ты остаёшься атакующим.
+    // Лава Яша взял карты,
+    // поэтому следующий ход снова твой.
 
     attacker = "player";
 
@@ -1664,6 +1592,64 @@ function enemyTake() {
 
 
 // ============================================
+// ДОБОР
+// ============================================
+
+function drawCards() {
+
+    if (
+        deck.length === 0
+    ) {
+
+        deckFinished = true;
+
+        return;
+    }
+
+
+    drawFor(attacker);
+
+    drawFor(defender);
+
+
+    if (
+        deck.length === 0
+    ) {
+
+        deckFinished = true;
+
+    }
+
+}
+
+
+// ============================================
+// ДОБОР ОДНОГО ИГРОКА
+// ============================================
+
+function drawFor(who) {
+
+    const hand =
+        who === "player"
+            ? playerHand
+            : enemyHand;
+
+
+    while (
+        hand.length < 6 &&
+        deck.length > 0
+    ) {
+
+        hand.push(
+            deck.shift()
+        );
+
+    }
+
+}
+
+
+// ============================================
 // КНОПКИ
 // ============================================
 
@@ -1678,7 +1664,9 @@ function renderControls() {
     controls.innerHTML = "";
 
 
-    // Защита игрока
+    // ========================================
+    // ВЗЯТЬ
+    // ========================================
 
     if (
         phase === "defend" &&
@@ -1707,12 +1695,12 @@ function renderControls() {
             button
         );
 
-
-        return;
     }
 
 
-    // Бито
+    // ========================================
+    // БИТО
+    // ========================================
 
     if (
         phase === "throw" &&
@@ -1742,8 +1730,6 @@ function renderControls() {
             button
         );
 
-
-        return;
     }
 
 }
@@ -1763,7 +1749,7 @@ function updateStatus(text) {
 
 
 // ============================================
-// ОТОБРАЖЕНИЕ
+// ОТРИСОВКА
 // ============================================
 
 function render() {
@@ -1782,30 +1768,26 @@ function render() {
     ).textContent =
 
         deckFinished
-
             ? "Колода закончилась"
-
             : `Колода: ${deck.length}`;
 
 
     document.getElementById(
         "trumpInfo"
     ).textContent =
-
         `Козырь: ${getSuitSymbol(trumpSuit)}`;
 
 
     document.getElementById(
         "roundInfo"
     ).textContent =
-
         `У тебя: ${playerHand.length} • У Лавы Яши: ${enemyHand.length}`;
 
 }
 
 
 // ============================================
-// КАРТЫ ЛАВЫ ЯШИ
+// КАРТЫ ЛАВЫ
 // ============================================
 
 function renderEnemyCards() {
@@ -1883,13 +1865,8 @@ function renderPlayerCards() {
 
             element.innerHTML = `
 
-                <div>
-                    ${card.rank}
-                </div>
-
-                <div>
-                    ${card.symbol}
-                </div>
+                <div>${card.rank}</div>
+                <div>${card.symbol}</div>
 
             `;
 
@@ -1940,19 +1917,6 @@ function renderPlayerCards() {
                     disabled = true;
 
                 }
-
-            }
-
-
-            // Не наше действие
-
-            if (
-                phase !== "attack" &&
-                phase !== "defend" &&
-                phase !== "throw"
-            ) {
-
-                disabled = true;
 
             }
 
@@ -2097,13 +2061,8 @@ function createSmallCard(card) {
 
     element.innerHTML = `
 
-        <div>
-            ${card.rank}
-        </div>
-
-        <div>
-            ${card.symbol}
-        </div>
+        <div>${card.rank}</div>
+        <div>${card.symbol}</div>
 
     `;
 
@@ -2114,7 +2073,7 @@ function createSmallCard(card) {
 
 
 // ============================================
-// СИМВОЛ МАСТИ
+// СИМВОЛ КОЗЫРЯ
 // ============================================
 
 function getSuitSymbol(suit) {
@@ -2134,7 +2093,7 @@ function getSuitSymbol(suit) {
 
 
 // ============================================
-// ПРОВЕРКА КОНЦА ИГРЫ
+// ПРОВЕРКА КОНЦА
 // ============================================
 
 function checkEndAfterRound() {
@@ -2151,8 +2110,6 @@ function checkEndAfterRound() {
     const enemyEmpty =
         enemyHand.length === 0;
 
-
-    // Оба закончили одновременно
 
     if (
         playerEmpty &&
@@ -2186,7 +2143,6 @@ function checkEndAfterRound() {
             "Лава Яша первым остался без карт."
         );
 
-        return;
     }
 
 }
@@ -2196,10 +2152,7 @@ function checkEndAfterRound() {
 // КОНЕЦ ИГРЫ
 // ============================================
 
-function endGame(
-    title,
-    text
-) {
+function endGame(title, text) {
 
     gameOver = true;
 
