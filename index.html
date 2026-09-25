@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Лава Яша</title>
+    <title>Лава Яша — Дурак</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -16,50 +16,180 @@
         body {
             margin: 0;
             min-height: 100vh;
-            background: #111;
+            background: #087a3d;
             color: white;
             font-family: Arial, sans-serif;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            text-align: center;
+            overflow: hidden;
         }
 
         .game {
-            width: 100%;
-            max-width: 500px;
-            padding: 30px 20px;
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
         }
 
-        h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
+        .top {
+            text-align: center;
         }
 
-        .subtitle {
-            color: #aaa;
-            margin-bottom: 40px;
+        .top h1 {
+            margin: 5px 0;
+            font-size: 25px;
         }
 
-        .play-button {
-            width: 100%;
-            padding: 18px;
-            border: none;
-            border-radius: 16px;
+        .info {
+            font-size: 15px;
+            opacity: 0.9;
+        }
 
-            background: #ff5722;
-            color: white;
+        .table {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
+        .deck {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .deck-card {
+            width: 55px;
+            height: 78px;
+            border-radius: 7px;
+            background: #174a9c;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .trump {
+            position: absolute;
+            top: 88px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 22px;
-            font-weight: bold;
+        }
 
+        .enemy {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .enemy-cards {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .enemy-card {
+            width: 32px;
+            height: 45px;
+            margin-left: -10px;
+            background: #174a9c;
+            border: 2px solid white;
+            border-radius: 5px;
+        }
+
+        .enemy-card:first-child {
+            margin-left: 0;
+        }
+
+        .battle {
+            display: flex;
+            gap: 10px;
+            min-height: 100px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player {
+            text-align: center;
+        }
+
+        .player-name {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .hand {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            min-height: 115px;
+            padding-bottom: 5px;
+        }
+
+        .card {
+            width: 55px;
+            height: 82px;
+            background: white;
+            color: black;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            margin-left: -8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .card:first-child {
+            margin-left: 0;
+        }
+
+        .card:hover {
+            transform: translateY(-15px);
+        }
+
+        .red {
+            color: #d90000;
+        }
+
+        .black {
+            color: #111;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .new-game {
+            border: none;
+            background: #ff9800;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 12px 22px;
+            border-radius: 12px;
+            margin: 5px auto 10px;
             cursor: pointer;
         }
 
-        .play-button:active {
-            transform: scale(0.97);
+        @media (max-width: 400px) {
+            .card {
+                width: 48px;
+                height: 72px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -68,12 +198,43 @@
 
 <div class="game">
 
-    <h1>🔥 Лава Яша</h1>
+    <div class="top">
+        <h1>🔥 Лава Яша — Дурак</h1>
+        <div class="info">
+            В колоде: <span id="deckCount">24</span> карт
+        </div>
+    </div>
 
-    <p class="subtitle">Добро пожаловать в игру</p>
+    <div class="table">
 
-    <button class="play-button" onclick="startGame()">
-        🎮 Играть
+        <div class="enemy">
+            <div>🤖 Лава Яша</div>
+            <div class="enemy-cards" id="enemyCards"></div>
+        </div>
+
+        <div class="trump" id="trump">
+            Козырь: ♠️
+        </div>
+
+        <div class="deck">
+            <div class="deck-card">🂠</div>
+        </div>
+
+        <div class="battle" id="battle"></div>
+
+    </div>
+
+    <div class="message" id="message">
+        Раздача карт...
+    </div>
+
+    <div class="player">
+        <div class="player-name">👤 Ты</div>
+        <div class="hand" id="playerHand"></div>
+    </div>
+
+    <button class="new-game" onclick="newGame()">
+        🔄 Новая игра
     </button>
 
 </div>
@@ -84,9 +245,142 @@
     tg.ready();
     tg.expand();
 
-    function startGame() {
-        alert("Игра начинается! 🔥");
+    const suits = [
+        { symbol: "♠", name: "spades", color: "black" },
+        { symbol: "♥", name: "hearts", color: "red" },
+        { symbol: "♦", name: "diamonds", color: "red" },
+        { symbol: "♣", name: "clubs", color: "black" }
+    ];
+
+    const ranks = [
+        { name: "6", value: 6 },
+        { name: "7", value: 7 },
+        { name: "8", value: 8 },
+        { name: "9", value: 9 },
+        { name: "10", value: 10 },
+        { name: "J", value: 11 },
+        { name: "Q", value: 12 },
+        { name: "K", value: 13 },
+        { name: "A", value: 14 }
+    ];
+
+    let deck = [];
+    let playerHand = [];
+    let enemyHand = [];
+    let trumpSuit = null;
+
+    function createDeck() {
+        deck = [];
+
+        for (const suit of suits) {
+            for (const rank of ranks) {
+                deck.push({
+                    suit: suit.name,
+                    symbol: suit.symbol,
+                    color: suit.color,
+                    rank: rank.name,
+                    value: rank.value
+                });
+            }
+        }
+
+        deck.sort(() => Math.random() - 0.5);
     }
+
+    function dealCards() {
+        playerHand = [];
+        enemyHand = [];
+
+        for (let i = 0; i < 6; i++) {
+            playerHand.push(deck.pop());
+            enemyHand.push(deck.pop());
+        }
+
+        trumpSuit = deck[deck.length - 1].suit;
+
+        render();
+    }
+
+    function render() {
+        const playerElement = document.getElementById("playerHand");
+        const enemyElement = document.getElementById("enemyCards");
+
+        playerElement.innerHTML = "";
+        enemyElement.innerHTML = "";
+
+        playerHand.forEach((card, index) => {
+            const element = document.createElement("div");
+
+            element.className = "card " + card.color;
+
+            element.innerHTML = `
+                <div>${card.rank}</div>
+                <div>${card.symbol}</div>
+            `;
+
+            element.onclick = () => playCard(index);
+
+            playerElement.appendChild(element);
+        });
+
+        enemyHand.forEach(() => {
+            const element = document.createElement("div");
+            element.className = "enemy-card";
+            enemyElement.appendChild(element);
+        });
+
+        const trumpSymbol =
+            suits.find(suit => suit.name === trumpSuit).symbol;
+
+        document.getElementById("trump").innerText =
+            "Козырь: " + trumpSymbol;
+
+        document.getElementById("deckCount").innerText =
+            deck.length;
+
+        document.getElementById("message").innerText =
+            "Твой ход — выбери карту";
+    }
+
+    function playCard(index) {
+        const card = playerHand[index];
+
+        playerHand.splice(index, 1);
+
+        document.getElementById("message").innerText =
+            `Ты походил: ${card.rank}${card.symbol}`;
+
+        render();
+
+        setTimeout(() => {
+            enemyMove();
+        }, 800);
+    }
+
+    function enemyMove() {
+        if (enemyHand.length === 0) {
+            document.getElementById("message").innerText =
+                "🏆 Ты победил!";
+            return;
+        }
+
+        const card = enemyHand.pop();
+
+        document.getElementById("message").innerText =
+            `Лава Яша сходил: ${card.rank}${card.symbol}`;
+
+        render();
+    }
+
+    function newGame() {
+        createDeck();
+        dealCards();
+
+        document.getElementById("message").innerText =
+            "Новая игра! Твой ход.";
+    }
+
+    newGame();
 </script>
 
 </body>
